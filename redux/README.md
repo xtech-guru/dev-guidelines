@@ -176,3 +176,12 @@ export const addTodo = todo => ({ type: ADD_TODO, payload: { todo } });
 ```
 
 We may call combineReducers at any level of the reducer hierarchy. It doesn't have to happen at the top. In fact we may use it again to split the child reducers that get too complicated into independent grandchildren, and so on.
+
+This approach has several benefits:
+
+* makes the state manipulation centralized each slice of state in its own reducer.
+* adding new actions becomes more easy.
+* makes debugging easier as we can isolate in any level exactly the issue happens.
+* the initialization of the state becomes less painful as we don't have to provide all the initial state at once and each time we want to add a piece of state we initialize it at its reducer without need to change the initial state object (which is error prone).
+* simplifies the unit test of each reducer.
+* take advantage of the ES2015 object shorthand syntax to provide more readable state shape.
