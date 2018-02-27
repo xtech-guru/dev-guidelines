@@ -1,4 +1,4 @@
-# Installation
+## Installation
 
 To add [redux](https://redux.js.org/) to a React project you must install `redux` itself and it's [`React` bindings](https://github.com/reactjs/react-redux):
 
@@ -90,3 +90,89 @@ ReactDOM.render(
   document.getElementById('root')
 );
 ```
+
+## Best Practices
+
+### [Ducks](https://medium.freecodecamp.org/scaling-your-redux-app-with-ducks-6115955638be)
+
+In our applications we use the commonly used `ducks` pattern:
+All our redux logic should be located in the `src/modules` directory. Each module should have one file with the extension `.ducks.js` within this file we can declare our "sub-reducers", actions, and action creators.
+Let's say that we have a todo application and for simplicity we have one action 'ADD_TODO':
+
+```javascript
+// actions.
+const ADD_TODO = 'ADD_TODO';
+
+// reudcer
+const todos = (state = [], action) => {
+  switch (action.type) {
+    case ADD_TODO:
+      return [...state, action.payload.todo];
+    default:
+      return state;
+  }
+};
+
+// the reducer must be the default export.
+export default todos;
+
+// action creators
+export const addTodo = todo => ({ type: ADD_TODO, payload: { todo } });
+```
+
+### Defining state shape and advanced usage of [`combineReducers`](https://redux.js.org/recipes/structuring-reducers/using-combinereducers)
+
+From the redux documentation:
+
+> The most common state shape for a Redux app is a plain Javascript object containing "slices" of domain-specific data at each top-level key. Similarly, the most common approach to writing reducer logic for that state shape is to have "slice reducer" functions, each with the same (state, action) signature, and each responsible for managing all updates to that specific slice of state. Multiple slice reducers can respond to the same action, independently update their own slice as needed, and the updated slices are combined into the new state object.
+
+> Because this pattern is so common, Redux provides the combineReducers utility to implement that behavior. It is an example of a higher-order reducer, which takes an object full of slice reducer functions, and returns a new reducer function.
+
+Following that we can rewrite our duck:
+
+```diff
++ import { combineReducers } from 'redux';
++
+// actions.
+const ADD_TODO = 'ADD_TODO';
+
++ const allIds = (state = [], action) => {
++  switch(action.type) {
++    case ADD_TODO:
++      return [...state, action.payload.todo.id];
++    default:
++      return state;
++  }
++}
++
++ const byId = (state = {}, action) => {
++  switch(action.type) {
++    case ADD_TODO:
++      return {
++        ...state,
++        [action.payload.todo.id]: action.payload.todo
++      };
++    default:
++      return state;
++  }
++}
+
+// reudcer
++ const todos = combineReducers({ allIds, byId });
+- const todos = (state = [], action) => {
+- switch (action.type) {
+-    case ADD_TODO:
+-      return [...state, action.payload.todo];
+-    default:
+-      return state;
+-  }
+-};
+
+// the reducer must be the default export.
+export default todos;
+
+// action creators
+export const addTodo = todo => ({ type: ADD_TODO, payload: { todo } });
+```
+
+We may call combineReducers at any level of the reducer hierarchy. It doesn't have to happen at the top. In fact we may use it again to split the child reducers that get too complicated into independent grandchildren, and so on.
