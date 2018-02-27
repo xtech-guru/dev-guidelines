@@ -1,12 +1,12 @@
 # Installation
 
-To add redux to a React project you must install `redux` itself and it's `React` bindings:
+To add [redux](https://redux.js.org/) to a React project you must install `redux` itself and it's [`React` bindings](https://github.com/reactjs/react-redux):
 
 ```bash
 yarn add redux react-redux
 ```
 
-You can also use redux middlewares such as redux-thunk and redux-promise-middleware.
+You can also use redux middlewares such as [redux-thunk](https://github.com/gaearon/redux-thunk) and [redux-promise-middleware](https://github.com/pburtchaell/redux-promise-middleware).
 
 ```bash
 yarn add redux-promise-middleware redux-thunk
@@ -57,7 +57,7 @@ ReactDOM.render(
 );
 ```
 
-If we want to enable the redux-devtools for better debugging experience we can add:
+If we want to enable the [redux-devtools](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd) for better debugging experience we can add:
 
 ```javascript
 import React from 'react';
