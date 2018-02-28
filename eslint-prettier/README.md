@@ -61,10 +61,10 @@ Prettier helps us keep our code consistent in order to save us the pain of manua
 1- first grab prettier from NPM:
 
 ```bash
-yarn add --dev prettier
+yarn add --dev prettier eslint-config-prettier
 ```
 
-2- add a config file in the root of the project with the name of `.prettierrc` with the following content:
+2- add a config file in the root of the project with the name of [`.prettierrc`](code/.prettierrc) with the following content:
 
 ```json
 {
@@ -84,7 +84,18 @@ yarn add --dev prettier
 }
 ```
 
-4- We can prettier to format our code:
+4- change `.eslintrc` to extend `prettier`, which will give prettier the ability to handle all formatting [rules](https://prettier.io/docs/en/eslint.html#turn-off-eslint-s-formatting-rules) instead of eslint to avoid confusing.
+
+```diff
+{
+  ...
+-  "extends": ["react-app"]
++  "extends": ["react-app", "prettier"]
+  ...
+}
+```
+
+5- We can prettier to format our code:
 
 ```bash
 yarn format
@@ -94,3 +105,42 @@ yarn format
 
 * [Atom](https://github.com/prettier/prettier-atom)
 * [VS Code](https://github.com/prettier/prettier-vscode)
+
+# [Lint-staged](https://github.com/okonet/lint-staged)
+
+Link-staged is an NPM package that allows to run linters before every commit.
+
+In order to user it we should install `lint-staged` along wiht [`husky`](https://github.com/typicode/husky);
+
+```bash
+yarn add --dev lint-staged husky
+```
+
+after that in our `package.json` file we should add:
+
+1- script to lint/fix the code wiht eslint
+
+2- another script named `precommit` to run `lint-staged` before the commit
+
+3- an extra section `"lint-staged"` where we specify what kind of scripts we want to run plus on which type of files to do it.
+
+```diff
+{
+  ...
+  "scripts": {
+    ...
+-    "format": "prettier \"src/**/*.js\" --write"
++    "format": "prettier \"src/**/*.js\" --write",
++    "lint:fix": "eslint src --fix",
++    "precommit": "lint-staged"
+  },
+  ...
++  "lint-staged": {
++    "*.js": ["yarn format", "yarn lint:fix", "git add"]
++  }
+}
+```
+
+the full version of `package.json` can be located [here](code/package.json)
+
+After that we will see every time we make a commit lint-staged will run `yarn format` and `yarn lint:fix` on every `.js` file.
