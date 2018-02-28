@@ -51,3 +51,46 @@ yarn add --dev eslint-plugin-react eslint-plugin-import
 ```
 
 You can find the full config file [here](code/.eslintrc)
+
+# [Prettier](https://prettier.io/)
+
+Prettier helps us keep our code consistent in order to save us the pain of manually formatting the code and make the Git history much clean.
+
+## Installation
+
+1- first grab prettier from NPM:
+
+```bash
+yarn add --dev prettier
+```
+
+2- add a config file in the root of the project with the name of `.prettierrc` with the following content:
+
+```json
+{
+  "printWidth": 120,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "useTabs": false
+}
+```
+
+3- In `package.json` file add a script to run prettier:
+
+```diff
+"scripts": {
+  ...
++   "format": "prettier \"src/**/*.js\" --write"
+}
+```
+
+4- We can prettier to format our code:
+
+```bash
+yarn format
+```
+
+## Editors Integrations
+
+* [Atom](https://github.com/prettier/prettier-atom)
+* [VS Code](https://github.com/prettier/prettier-vscode)
