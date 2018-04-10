@@ -100,6 +100,7 @@ All our redux logic should be located in the `src/modules` directory. Each modul
 Let's say that we have a todo application and for simplicity we have one action 'ADD_TODO':
 
 ```javascript
+// todos.ducks.js
 // actions.
 const ADD_TODO = 'ADD_TODO';
 
@@ -131,6 +132,8 @@ From the redux documentation:
 Following that we can rewrite our duck:
 
 ```diff
+// todos.ducks.js
+
 + import { combineReducers } from 'redux';
 +
 // actions.
@@ -185,3 +188,73 @@ This approach has several benefits:
 * the initialization of the state becomes less painful as we don't have to provide all the initial state at once and each time we want to add a piece of state we initialize it at its reducer without need to change the initial state object (which is error prone).
 * simplifies the unit test of each reducer.
 * take advantage of the ES2015 object shorthand syntax to provide more readable state shape.
+
+### avoid redundant code
+
+One of the things that most of people blame `redux` for it is the amount of boilerplate needed to add a new piece of state.
+As `redux` is just `javascript` and has no extra "black magic", we can take advantage of the features provided for us by the language to generate `reducers` and `action creators` for common use cases following what our project requires.
+
+Let's take the previous example and make it more generic:
+
+```javascript
+import { combineReducers } from 'redux';
+
+export const reducerFactory = ({ name }) => {
+  const addAction = `ADD_${name.toUpperCase()}`;
+  const removeAction = `REMOVE_${name.toUpperCase()}`;
+  const updateAction = `UPDATE_${name.toUpperCase()}`;
+
+  const allIds = (state = [], action) => {
+    switch (action.type) {
+      case addAction:
+        return [...state, action.payload[name]];
+      case removeAction: {
+        const index = state.findIndex(item => item.id === action.payload.id);
+        return [...state.slice(0, index), ...state.slice(index + 1)];
+      }
+      case updateAction: {
+        const index = state.findIndex(item => item.id === action.payload.id);
+        return [
+          ...state.slice(0, index),
+          action.payload[name],
+          ...state.slice(index + 1)
+        ];
+      }
+      default:
+        return state;
+    }
+  };
+
+  const byId = (state = {}, action) => {
+    switch (action.type) {
+      case addAction:
+        return {
+          ...state,
+          [action.payload[name][id]]: action.payload[name]
+        };
+      case removeAction:
+        return {
+          ...state,
+          [action.payload.id]: undefined
+        };
+      case updateAction:
+        return {
+          ...state,
+          [action.payload.id]: action.payload[name]
+        };
+      default:
+        return state;
+    }
+  };
+
+  return combineReducers({ allIds, byId });
+};
+```
+
+```javascript
+// todos.ducks.js
+
+import { reducerFactory } from 'path-to-module';
+
+export default reducerFactory({ name: 'todo' });
+```
