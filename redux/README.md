@@ -288,7 +288,7 @@ Now let's say we want to handle other actions which are not common between state
 // todos.ducks.js
 
 import { combineReducers } from 'redux';
-import { reducerFactory } from 'path-to-module';
+import { reducerFactory, actionCreatorsFactory } from 'path-to-module';
 
 const { allIds, byId } = reducerFactory({ name: 'todo' });
 
