@@ -210,14 +210,6 @@ export const reducerFactory = ({ name }) => {
         const index = state.findIndex(item => item.id === action.payload.id);
         return [...state.slice(0, index), ...state.slice(index + 1)];
       }
-      case updateAction: {
-        const index = state.findIndex(item => item.id === action.payload.id);
-        return [
-          ...state.slice(0, index),
-          action.payload[name],
-          ...state.slice(index + 1)
-        ];
-      }
       default:
         return state;
     }
@@ -247,15 +239,47 @@ export const reducerFactory = ({ name }) => {
 
   return { allIds, byId };
 };
+
+export const actionCreatorsFactory = ({ name }) => {
+  const addActionCreator = objectToAdd => ({
+    type: `ADD_${name.toUpperCase()}`,
+    payload: {
+      [name]: objectToAdd
+    }
+  });
+
+  const removeActionCreator = id => ({
+    type: `REMOVE_${name.toUpperCase()}`,
+    payload: {
+      id
+    }
+  });
+
+  const updateActionCreator = (id, updatedObject) => ({
+    type: `UPDATE_${name.toUpperCase()}`,
+    payload: {
+      [name]: updatedObject,
+      id
+    }
+  });
+
+  return { addActionCreator, removeActionCreator, updateActionCreator };
+};
 ```
 
 ```javascript
 // todos.ducks.js
 
 import { combineReducers } from 'redux';
-import { reducerFactory } from 'path-to-module';
+import { reducerFactory, actionCreatorsFactory } from 'path-to-module';
 
 export default combineReducers(reducerFactory({ name: 'todo' }));
+
+export const {
+  addActionCreator: addTodo,
+  removeActionCreator: removeTodo,
+  updateActionCreator: updateTodo
+} = actionCreatorsFactory({ name: 'todo' });
 ```
 
 Now let's say we want to handle other actions which are not common between state slices. For example we want to add a `TOGGLE_TODO` action:
@@ -285,4 +309,12 @@ const byIdReducer = (state = {}, action) => {
 const todosReducer = combineReducers({ allIds, byId: byIdReducer });
 
 export default todosReducer;
+
+export const {
+  addActionCreator: addTodo,
+  removeActionCreator: removeTodo,
+  updateActionCreator: updateTodo
+} = actionCreatorsFactory({ name: 'todo' });
+
+export const toggleTodo = id => ({ type: 'TOGGLE_TODO', payload: { id } });
 ```
