@@ -197,8 +197,6 @@ As `redux` is just `javascript` and has no extra "black magic", we can take adva
 Let's take the previous example and make it more generic:
 
 ```javascript
-import { combineReducers } from 'redux';
-
 export const reducerFactory = ({ name }) => {
   const addAction = `ADD_${name.toUpperCase()}`;
   const removeAction = `REMOVE_${name.toUpperCase()}`;
@@ -247,14 +245,44 @@ export const reducerFactory = ({ name }) => {
     }
   };
 
-  return combineReducers({ allIds, byId });
+  return { allIds, byId };
 };
 ```
 
 ```javascript
 // todos.ducks.js
 
+import { combineReducers } from 'redux';
 import { reducerFactory } from 'path-to-module';
 
-export default reducerFactory({ name: 'todo' });
+export default combineReducers(reducerFactory({ name: 'todo' }));
+```
+
+Now let's say we want to handle other actions which are not common between state slices. For example we want to add a `TOGGLE_TODO` action:
+
+```javascript
+// todos.ducks.js
+
+import { combineReducers } from 'redux';
+import { reducerFactory } from 'path-to-module';
+
+const { allIds, byId } = reducerFactory({ name: 'todo' });
+
+const byIdReducer = (state = {}, action) => {
+  if (action.type === 'TOGGLE_TODO') {
+    const todo = state.find(item => item.id === action.payload.id);
+    return {
+      ...state,
+      [action.payload.id]: {
+        ...todo,
+        completed: !todo.completed
+      }
+    };
+  }
+  return byId(state, action);
+};
+
+const todosReducer = combineReducers({ allIds, byId: byIdReducer });
+
+export default todosReducer;
 ```
