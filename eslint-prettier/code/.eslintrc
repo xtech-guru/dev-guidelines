@@ -12,10 +12,12 @@
     "linebreak-style": ["error", "unix"],
     "quotes": ["error", "single"],
     "semi": ["error", "always"],
-    "space-before-function-paren": ["error", { "anonymous": "always", "named": "never", "asyncArrow": "always" }],
+    "space-before-function-paren": [
+      "error",
+      { "anonymous": "always", "named": "never", "asyncArrow": "always" }
+    ],
     "lines-between-class-members": "error",
-    "max-len": ["error", { "code": 120 }],
-    "react/react-in-jsx-scope": "warn",
+    "max-len": ["error", { "code": 80 }],
     "react/no-redundant-should-component-update": "error",
     "react/no-unused-prop-types": "warn",
     "react/prop-types": "warn",
@@ -24,6 +26,7 @@
     "react/jsx-boolean-value": ["error", "never"],
     "import/no-unresolved": "error",
     "import/first": "error",
-    "import/order": ["error", { "newlines-between": "always" }]
+    "import/order": ["error", { "newlines-between": "always" }],
+    "jsx-a11y/href-no-hash": "off"
   }
 }
